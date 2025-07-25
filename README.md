@@ -1,4 +1,4 @@
-# A-Jittor-Implementation-of-Latent-Diffusion-Models
+# Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models
 
 ## 1.配置环境
 
