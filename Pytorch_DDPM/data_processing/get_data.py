@@ -27,3 +27,4 @@ def get_dataloader():
     transformed_dataset = dataset.with_transform(transformss).remove_columns("label")
     dataloader = DataLoader(transformed_dataset["train"], batch_size=batch_size, shuffle=True)
     return dataloader, image_size, channels, batch_size
+
