@@ -53,9 +53,12 @@ def get_fmnist_dataloader():
     batch_size = 128
 
     transformed_dataset = dataset.with_transform(fmnist_transforms).remove_columns("label")
+    
     dataloader = FashionMNISTDataset(transformed_dataset["train"])
+    
+    testdataloader = FashionMNISTDataset(transformed_dataset["test"])
     #dataloader = DataLoader(transformed_dataset["train"], batch_size=batch_size, shuffle=True)
-    return dataloader, image_size, channels, batch_size
+    return dataloader,testdataloader, image_size, channels, batch_size
 
 def cifar10_transforms(examples):
     #transform = transforms.Compose([
@@ -93,8 +96,9 @@ def get_cifar10_dataloader():
 
     transformed_dataset = dataset.with_transform(cifar10_transforms).remove_columns("label")
     dataloader = FashionMNISTDataset(transformed_dataset["train"])
+    testdataloader = FashionMNISTDataset(transformed_dataset["test"])
     #dataloader = DataLoader(transformed_dataset["train"], batch_size=batch_size, shuffle=True)
-    return dataloader, image_size, channels, batch_size
+    return dataloader,testdataloader, image_size, channels, batch_size
 
 
 
