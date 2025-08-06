@@ -28,22 +28,37 @@ P.S. 数据集的获取和处理包含在训练及评估流程中
 
 
 
-
-
 ## 3.训练
 
+
+
+| 参数名       | 类型      | 默认值     | 描述                     |
+|-------------|----------|-----------|--------------------------|
+| device     | str | 'cuda:0'         | 设备     |
+| epochs       | int    | 40       | 训练轮数            |
+| timesteps   | int   | 1000   | 采样时间步         |
+| loss_type   | str   | 'huber'   | 损失函数         |
+| schedule_func   | str   | 'linear'   | 规划函数         |
+| dataset   | str   | 'fmnist'   | 训练数据集         |
 
 ````
 # pytorch
 cd Pytorch_DDPM
 python torch_main.py
 # jittor
-cd Jittor_DDPM
+cd Jittor_DDPM 
 python jittor_main.py
 ````
 
 
 ## 4.推理
+
+| 参数名       | 类型      | 默认值     | 描述                     |
+|-------------|----------|-----------|--------------------------|
+| device     | str | 'cuda:0'         | 设备     |
+| save_gif   | bool   | True  | 是否保存gif         |
+| dataset   | str   | 'fmnist'   | 对应训练数据集         |
+
 
 ````
 # pytorch
@@ -55,6 +70,13 @@ python inference.py
 ````
 
 ## 5.评估
+
+| 参数名       | 类型      | 默认值     | 描述                     |
+|-------------|----------|-----------|--------------------------|
+| device     | str | 'cuda:0'         | 设备     |
+| model_path   | str   | -  | 模型ckpt路径         |
+| dataset   | str   | 'fmnist'   | 对应训练数据集         |
+| cate   | str   | 'fid'   | 评估指标         |
 
 ````
 # pytorch
@@ -73,13 +95,15 @@ python metrics.py --dataset fmnist --cate is
 
 ## 6.实验结果
 
-### 6.1日志
-
 （1000步采样，训练40epoch）
 
-pytorch: [on Fashion-MNIST](https://cg.cs.tsinghua.edu.cn/jittor/)、[on CIFAR10](https://cg.cs.tsinghua.edu.cn/jittor/)
+### 6.1日志
 
-jittor: [on Fashion-MNIST](https://cg.cs.tsinghua.edu.cn/jittor/)、[on CIFAR10](https://cg.cs.tsinghua.edu.cn/jittor/)
+**pytorch:** [on Fashion-MNIST](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/cifar_train.png)
+、[on CIFAR10](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/cifar_train.png)
+
+**jittor:** [on Fashion-MNIST](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/cifar_train.png)
+、[on CIFAR10](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/cifar_train.png)
 
 ### 6.2训练损失曲线
 
@@ -107,12 +131,26 @@ jittor: [on Fashion-MNIST](https://cg.cs.tsinghua.edu.cn/jittor/)、[on CIFAR10]
 
 #### 6.5.1灰度图
 
-
-
 | 框架   | 采样1w张用时（秒） |
 |--------|------|
-| pytorch   | fmnist   |
-| jittor   | cifar10   |
+| pytorch   | 2015.97   |
+| jittor   | 3641.01   |
+
+Jittor生成效果：
+
+![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/j_fmni_1.png)
+
+Jittor采样过程：
+
+![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/j_fmni_1.gif)
+
+Pytorch生成效果：
+
+![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/t_fmni_1.png)
+
+Pytorch采样过程：
+
+![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/t_fmni_1.gif)
 
 #### 6.5.2彩色图
 
@@ -121,7 +159,23 @@ jittor: [on Fashion-MNIST](https://cg.cs.tsinghua.edu.cn/jittor/)、[on CIFAR10]
 | pytorch   | 2189.36   |
 | jittor   | 4941.18   |
 
+Jittor生成效果：
+
 ![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/j_cifar_1.png)
+
+Jittor采样过程：
+
+![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/j_cifar_1.gif)
+
+Pytorch生成效果：
+
+![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/t_cifar_1.png)
+
+Pytorch采样过程：
+
+![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/t_cifar_1.gif)
+
+
 
 ### 6.6评估结果
 
@@ -129,9 +183,9 @@ jittor: [on Fashion-MNIST](https://cg.cs.tsinghua.edu.cn/jittor/)、[on CIFAR10]
 
 | 框架   | 数据集 | 得分     |
 |--------|------|----------|
-| pytorch   | fmnist   | 0   |
+| pytorch   | fmnist   | 16.14   |
 | pytorch   | cifar10   | 19.05   |
-| jittor   | fmnist   | 0   |
+| jittor   | fmnist   | 14.94   |
 | jittor   | cifar10   | 38.96   |
 
 
@@ -139,10 +193,10 @@ jittor: [on Fashion-MNIST](https://cg.cs.tsinghua.edu.cn/jittor/)、[on CIFAR10]
 
 | 框架   | 训练数据集 | 得分     |
 |--------|------|----------|
-| pytorch   | fmnist   | 0   |
+| pytorch   | fmnist   | 4.24 ± 0.12   |
 | pytorch   | cifar10   | 3.95 ± 0.08   |
-| jittor   | fmnist   | 0   |
-| jittor   | cifar10   | 0   |
+| jittor   | fmnist   | 4.42 ± 0.08   |
+| jittor   | cifar10   | 3.29 ± 0.11   |
 
 ## 7.参考
 
