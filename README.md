@@ -1,23 +1,24 @@
 # Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models
 
-参考：[The Annotated Diffusion Model](https://huggingface.co/blog/annotated-diffusion)
 
-## 配置环境
+
+## 1.实验环境
+
+AutoDL镜像: Jittor  1.3.1 Python  3.8(ubuntu18.04) CUDA  11.3
+
+GPU: RTX 3090(24GB) * 1
+
+CPU: 14 vCPU Intel(R) Xeon(R) Gold 6330 CPU @ 2.00GHz
+
+安装其他依赖：
 
 ````
-git clone https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models.git
-cd Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models
-# pytorch
-conda env create -f environment.yml
-conda activate ddpm
-# jittor
-python -m pip install jittor
-python -m jittor.test.test_core
-python -m jittor.test.test_example
-python -m jittor.test.test_cudnn_op
+pip install numpy matplotlib datasets scipy einops tqdm torch torchvision
+# 如果需要评估（计算 fid 和 is）
+pip install torchmetrics torch-fidelity
 ````
 
-## 数据集准备
+## 2.数据集准备
 
 **FashionMNIST:**来自 10 种类别的共 7 万个不同商品的正面图片。60000/10000 的训练测试数据划分，28x28 的灰度图片。
 
@@ -25,7 +26,11 @@ python -m jittor.test.test_cudnn_op
 
 P.S. 数据集的获取和处理包含在训练及评估流程中
 
-## 训练
+
+
+
+
+## 3.训练
 
 
 ````
@@ -38,7 +43,7 @@ python jittor_main.py
 ````
 
 
-## 推理
+## 4.推理
 
 ````
 # pytorch
@@ -49,7 +54,7 @@ cd Jittor_DDPM
 python inference.py
 ````
 
-## 评估
+## 5.评估
 
 ````
 # pytorch
@@ -66,43 +71,59 @@ python metrics.py --dataset cifar10 --cate is
 python metrics.py --dataset fmnist --cate is
 ````
 
-## 实验结果
+## 6.实验结果
 
-### 训练日志
+### 6.1日志
 
 （1000步采样，训练40epoch）
 
-pytorch: [fmnist](https://cg.cs.tsinghua.edu.cn/jittor/)、[cifar10](https://cg.cs.tsinghua.edu.cn/jittor/)
+pytorch: [on Fashion-MNIST](https://cg.cs.tsinghua.edu.cn/jittor/)、[on CIFAR10](https://cg.cs.tsinghua.edu.cn/jittor/)
 
-jittor: [fmnist](https://cg.cs.tsinghua.edu.cn/jittor/)、[cifar10](https://cg.cs.tsinghua.edu.cn/jittor/)
+jittor: [on Fashion-MNIST](https://cg.cs.tsinghua.edu.cn/jittor/)、[on CIFAR10](https://cg.cs.tsinghua.edu.cn/jittor/)
 
-### Loss曲线
+### 6.2训练损失曲线
 
-pytorch:
 
-![GitHub Logo](https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png "GitHub")
+![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/cifar_train.png)
 
-jittor:
 
-![GitHub Logo](https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png "GitHub")
+![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/fmnist_train.png)
 
-### 生成效果
+### 6.3验证损失曲线
 
-**灰度图：**
+![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/cifar_val.png)
+
+
+![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/fmnist_val.png)
+
+### 6.4训练用时
+
+![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/cifar_time.png)
+
+
+![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/fmnist_time.png)
+
+### 6.5生成效果
+
+#### 6.5.1灰度图
+
+
 
 | 框架   | 采样1w张用时（秒） |
 |--------|------|
 | pytorch   | fmnist   |
 | jittor   | cifar10   |
 
-**彩色图：**
+#### 6.5.2彩色图
 
 | 框架   | 采样1w张用时（秒） |
 |--------|------|
 | pytorch   | 2189.36   |
 | jittor   | 4941.18   |
 
-### 评估结果
+![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/j_cifar_1.png)
+
+### 6.6评估结果
 
 **FID（Frechet Inception Distance）:**衡量生成图片分布与真实图片分布的距离，数值越小，生成质量越高。
 
@@ -116,10 +137,14 @@ jittor:
 
 **IS（Inception Score）:**衡量生成图片的质量和多样性，数值越高，生成效果越好。
 
-| 框架   | 数据集 | 得分     |
+| 框架   | 训练数据集 | 得分     |
 |--------|------|----------|
 | pytorch   | fmnist   | 0   |
 | pytorch   | cifar10   | 3.95 ± 0.08   |
 | jittor   | fmnist   | 0   |
 | jittor   | cifar10   | 0   |
+
+## 7.参考
+
+[The Annotated Diffusion Model](https://huggingface.co/blog/annotated-diffusion)
 
