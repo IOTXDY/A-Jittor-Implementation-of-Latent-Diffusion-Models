@@ -8,27 +8,7 @@ import torch
 from torch import nn, einsum
 import torch.nn.functional as F
 
-#import basic_functions
 from utils.basic_functions import *
-
-""" def exists(x):
-    return x is not None
-
-def default(val, d):
-    if exists(val):
-        return val
-    if isfunction(d):
-        return d()
-    else:
-        return d
-
-def num_to_groups(num, divisior):
-    groups = num // divisior
-    remainder = num % divisior
-    arr = [divisior] * groups
-    if remainder>0:
-        arr.append(remainder)
-    return arr """
 
 class Residual(nn.Module):
     def __init__(self, fn):
@@ -73,11 +53,11 @@ class WeightStandardizedConv2d(nn.Conv2d):
 
         weight = self.weight
         mean = reduce(weight, "o ... -> o 1 1 1", "mean")
-        #mean = weight.mean(dim=(1, 2, 3), keepdim=True)  # PyTorch原生实现
+        #mean = weight.mean(dim=(1, 2, 3), keepdim=True)
         var = reduce(weight, "o ... -> o 1 1 1", partial(torch.var, unbiased=False))
-        #var = weight.var(dim=(1, 2, 3), keepdim=True, unbiased=False)  # PyTorch原生实现
+        #var = weight.var(dim=(1, 2, 3), keepdim=True, unbiased=False)
 
-        normalized_weight = (weight - mean) * (var + eps).rsqrt()# rsqrt = 1/sqrt(x)
+        normalized_weight = (weight - mean) * (var + eps).rsqrt()
         return F.conv2d(
             x,
             normalized_weight,

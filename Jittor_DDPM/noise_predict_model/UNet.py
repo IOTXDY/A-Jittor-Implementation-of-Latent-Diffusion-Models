@@ -3,23 +3,16 @@
 from utils.network_helpers import *
 
 class Unet(Module):
-    def __init__(self, dim, init_dim=None, out_dim=None, dim_mults=(1,2,4,8), channels=3, self_condition=False
-                 ,resnet_block_groups=4,):
+    def __init__(self, dim, dim_mults=(1,2,4,8), channels=3, resnet_block_groups=4,):
         super().__init__()
-        # determine dimensions
-        self.channels = channels
-        self.self_condition = self_condition
-        input_channels = channels * (2 if self_condition else 1)
-
         init_dim = default(init_dim, dim)
-        self.init_conv = nn.Conv2d(input_channels, init_dim, 1, padding=0)
+        self.init_conv = nn.Conv2d(channels, init_dim, 1, padding=0)
 
         dims = [init_dim, *map(lambda m: dim * m, dim_mults)]
         in_out = list(zip(dims[:-1], dims[1:]))#eg [(64, 64), (64, 128), (128, 256), (256, 512)]
 
         block_klass = partial(ResnetBlock, groups=resnet_block_groups)
 
-        # time embeddings
         time_dim = dim * 4
 
         self.time_mlp = nn.Sequential(
@@ -31,10 +24,9 @@ class Unet(Module):
 
         self.downs = nn.ModuleList([])
         self.ups = nn.ModuleList([])
-        num_resolutions = len(in_out)
 
         for ind, (dim_in, dim_out) in enumerate(in_out):
-            is_last = ind >= (num_resolutions -1)
+            is_last = ind >= (len(in_out) -1)
 
             self.downs.append(
                 nn.ModuleList(
@@ -66,16 +58,10 @@ class Unet(Module):
                 )
             )
 
-        self.out_dim = default(out_dim, channels)
-
         self.final_res_block = block_klass(dim*2, dim, time_emb_dim=time_dim)
-        self.final_conv = nn.Conv2d(dim, self.out_dim, 1)
+        self.final_conv = nn.Conv2d(dim, channels, 1)
 
-    def execute(self, x, time, x_self_cond=None):
-        if self.self_condition:
-            x_self_cond = default(x_self_cond, lambda: jt.zeros_like(x))
-            x = jt.concat((x_self_cond,x),dim=1)
-        
+    def execute(self, x, time):
         x = self.init_conv(x)
         r = x.clone()
 

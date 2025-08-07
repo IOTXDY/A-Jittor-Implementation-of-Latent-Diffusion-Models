@@ -1,6 +1,4 @@
 from datasets import load_dataset
-#from torchvision import transforms
-#from torch.utils.data import DataLoader
 import os
 import jittor as jt
 from jittor.dataset import Dataset
@@ -8,12 +6,6 @@ from PIL import Image
 import numpy as np
 
 def fmnist_transforms(examples):
-    """ transform = transforms.Compose([
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Lambda(lambda t: (t * 2) - 1),
-    ])
-    examples["pixel_values"] = [transform(image.convert("L")) for image in examples["image"]] """
     transformed_images = []
     for image in examples["image"]:
         img = image.convert("L")
@@ -39,7 +31,6 @@ class FashionMNISTDataset(Dataset):
         item = self.dataset[index]
         x = jt.array(item["pixel_values"])
         return {"pixel_values": x}
-        #return x, 0  # 返回0作为伪标签，保持接口统一
     
     def __len__(self):
         return self.total_len
@@ -61,12 +52,6 @@ def get_fmnist_dataloader():
     return dataloader,testdataloader, image_size, channels, batch_size
 
 def cifar10_transforms(examples):
-    #transform = transforms.Compose([
-    #    transforms.RandomHorizontalFlip(),
-    #    transforms.ToTensor(),
-    #    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])  # [0,1] -> [-1,1]
-    #])
-    #examples["pixel_values"] = [transform(image.convert("RGB")) for image in examples["img"]]  # CIFAR-10的键是"img"
     transformed_images = []
     for img in examples["img"]:
         img = img.convert("RGB")
@@ -75,7 +60,7 @@ def cifar10_transforms(examples):
             img = img.transpose(Image.FLIP_LEFT_RIGHT)
         arr = np.array(img, dtype=np.float32) / 255.0
         
-        arr = (arr - 0.5) / 0.5  # mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]
+        arr = (arr - 0.5) / 0.5
         
         # HWC -> CHW
         arr = arr.transpose(2, 0, 1)

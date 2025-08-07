@@ -13,34 +13,29 @@ from torchvision.utils import save_image
 from noise_predict_model.UNet import Unet
 from data_processing.get_data import get_fmnist_dataloader, get_cifar10_dataloader
 from utils.basic_functions import *
-from utils.eval_functions import *
 from ddpm.denoising import *
 from ddpm.diffusion import *
 
 def train(args):
-    # 创建实验文件夹（带时间戳）
+    # 创建文件夹
     experiment_time = datetime.now().strftime("%Y%m%d_%H%M%S")
     ckpt_folder = Path("./model_ckpts") / experiment_time
     ckpt_folder.mkdir(parents=True, exist_ok=True)
 
-    # 设置日志记录（同时输出到控制台和文件）
+    # 日志记录
     log_file = ckpt_folder / "training_log.txt"
 
-    # 清除之前的日志处理器（避免重复）
     logger = logging.getLogger()
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
 
-    # 设置日志格式
     log_format = "%(asctime)s - %(levelname)s - %(message)s"
     formatter = logging.Formatter(log_format)
 
-    # 文件日志（写入 training_log.txt）
-    file_handler = logging.FileHandler(log_file, mode='a')  # 'a' 表示追加模式
+    file_handler = logging.FileHandler(log_file, mode='a')
     file_handler.setFormatter(formatter)
     file_handler.setLevel(logging.INFO)
 
-    # 控制台日志
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
     console_handler.setLevel(logging.INFO)
@@ -56,7 +51,7 @@ def train(args):
     
     betas, sqrt_recip_alphas, sqrt_alphas_cumprod, sqrt_one_minus_alphas_cumprod,posterior_variance = get_shedule(schedule_func=linear_beta_schedule, timesteps=args.timesteps)
 
-    #dataloader, image_size, channels, batch_size = get_fmnist_dataloader()
+    # 获取数据
     if args.dataset == "fmnist":
         dataloader,val_dataloader,image_size, channels, batch_size = get_fmnist_dataloader()
     elif args.dataset == "cifar10":
@@ -71,7 +66,7 @@ def train(args):
     
     print(len(dataloader))
 
-    ## 仅用于可视化
+    # 仅用于可视化
     data_for_vis = {"time_per_epoch":[],"loss_per_epoch":[],"loss_per_step":[],"val_loss_per_epoch":[],}
     
     best_val_loss = float('inf')
@@ -179,7 +174,7 @@ def train(args):
          loss_per_step=data_for_vis["loss_per_step"],
          loss_per_epoch=data_for_vis["loss_per_epoch"],)
     
-    # ===== 最终总结 =====
+    # 总结
     logger.info("\n" + "="*50)
     logger.info("Training Completed!")
     logger.info(f"Total Train Time: {str(timedelta(seconds=total_train_time))}")
@@ -187,21 +182,13 @@ def train(args):
     logger.info(f"Best Val Loss: {best_val_loss:.6f}")
     logger.info("="*50)
 
-    #torch.save(model.state_dict(), str(ckpt_folder / "cifar_e6.pth"))
-    #print("Training complete! Model saved to 'model_ckpts/'.")
-
-#python torch_train.py --device cuda:0 --epochs 6 --timesteps 300
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    #parser.add_argument('--batch_size', type=int, default=64)
-    #parser.add_argument('--save_and_sample_every', type=int, required=False,default=1000)
-    #parser.add_argument('--results_folder', required=False, default="./results")
     parser.add_argument('--device', default="cuda:0")
     parser.add_argument('--epochs', type=int, default=40)
     parser.add_argument('--timesteps', type=int, default=1000)
     parser.add_argument('--loss_type', default="huber")
     parser.add_argument('--schedule_func', default="linear")
-    #parser.add_argument('--mode', default="train")
     parser.add_argument('--dataset', default="fmnist")
     
     args = parser.parse_args()
@@ -213,11 +200,4 @@ if __name__ == '__main__':
     np.random.seed(_seed_)
     torch.cuda.manual_seed_all(_seed_)
 
-    #save_and_sample_every = 1000
     train(args)
-    #if args.mode == "train":
-     #   train(args)
-    #elif args.mode == "fid":
-     #   eval_fid(args)
-    #else:
-     #   raise NotImplementedError()

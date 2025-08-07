@@ -18,17 +18,39 @@ pip install numpy matplotlib datasets scipy einops tqdm torch torchvision
 pip install torchmetrics torch-fidelity
 ````
 
-## 2.数据集准备
+## 2.数据准备
 
-FashionMNIST:来自 10 种类别的共 7 万个不同商品的正面图片。60000/10000 的训练测试数据划分，28x28 的灰度图片。
+Fashion-MNIST:来自 10 种类别共 7 万个不同商品的正面图片。60000/10000 的训练测试数据划分，28x28 灰度图片。
 
 Cifar-10:包含 10 个类别的共 6 万张 RGB 彩色图片。50000/10000 的训练测试数据划分，图片的尺寸为 32×32。
 
 P.S. 数据集的获取和处理包含在训练及评估流程中
 
 
+## 3.目录结构
 
-## 3.训练
+```
+Pytorch-DDPM/
+├── data_processing/
+│   └── get_data.py # 获取数据，预处理
+├── ddpm/
+│   └── __init__.py
+│   └── denoising.py # 去噪（采样）过程
+│   └── diffusion.py # 扩散过程
+├── noise_predict_model/
+│   └── UNet.py # 噪声预测网络
+├── utils/
+│   └── __init__.py
+│   └── basic_functions.py # 一些辅助函数
+│   └── network_helpers.py # 网络基本模块
+├── inference.py # 采样
+├── torch_main.py # 训练
+└── metrics.py # 评估
+
+```
+(Jittor版本的结构完全对应)
+
+## 4.训练
 
 
 
@@ -51,7 +73,7 @@ python jittor_main.py
 ````
 
 
-## 4.推理
+## 5.推理
 
 | 参数名       | 类型      | 默认值     | 描述                     |
 |-------------|----------|-----------|--------------------------|
@@ -69,7 +91,7 @@ cd Jittor_DDPM
 python inference.py
 ````
 
-## 5.评估
+## 6.评估
 
 | 参数名       | 类型      | 默认值     | 描述                     |
 |-------------|----------|-----------|--------------------------|
@@ -87,11 +109,11 @@ cd Jittor_DDPM
 python metrics.py
 ````
 
-## 6.实验结果
+## 7.实验结果
 
-（1000步采样，训练40epoch）
+（1000步采样，训练40epochs）
 
-### 6.1日志
+### 7.1日志
 
 **pytorch:** [on Fashion-MNIST](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/170605.txt)
 、[on CIFAR10](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/162759.txt)
@@ -99,7 +121,7 @@ python metrics.py
 **jittor:** [on Fashion-MNIST](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/125737.txt)
 、[on CIFAR10](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/114506.txt)
 
-### 6.2训练损失曲线
+### 7.2训练损失曲线
 
 
 ![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/cifar_train.png)
@@ -107,23 +129,23 @@ python metrics.py
 
 ![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/fmnist_train.png)
 
-### 6.3验证损失曲线
+### 7.3验证损失曲线
 
 ![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/cifar_val.png)
 
 
 ![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/fmnist_val.png)
 
-### 6.4训练用时
+### 7.4训练用时
 
 ![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/cifar_time.png)
 
 
 ![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/fmnist_time.png)
 
-### 6.5生成效果
+### 7.5生成效果
 
-#### 6.5.1灰度图
+#### 7.5.1灰度图
 
 | 框架   | 采样1w张用时（秒） |
 |--------|------|
@@ -146,7 +168,7 @@ Pytorch采样过程：
 
 ![GitHub Logo](https://github.com/IOTXDY/Pytorch-and-Jittor-Implementations-of-Denoising-Diffusion-Probabilistic-Models/blob/main/Assets/t_fmni_1.gif)
 
-#### 6.5.2彩色图
+#### 7.5.2彩色图
 
 | 框架   | 采样1w张用时（秒） |
 |--------|------|
@@ -171,7 +193,7 @@ Pytorch采样过程：
 
 
 
-### 6.6评估结果
+### 7.6评估结果
 
 FID（Frechet Inception Distance）:衡量生成图片分布与真实图片分布的距离，数值越小，生成质量越高。
 
@@ -192,7 +214,7 @@ IS（Inception Score）:衡量生成图片的质量和多样性，数值越高�
 | jittor   | fmnist   | 4.42 ± 0.08   |
 | jittor   | cifar10   | 3.29 ± 0.11   |
 
-## 7.参考
+## 8.参考
 
 [Denoising Diffusion Probabilistic Models](https://proceedings.neurips.cc/paper_files/paper/2020/file/4c5bcfec8584af0d967f1ab10179ca4b-Paper.pdf)
 

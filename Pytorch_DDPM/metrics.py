@@ -32,10 +32,9 @@ def eval_fid_dynamic(args):
         dataset = load_dataset("cifar10")
         transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])  # [0,1] -> [-1,1]
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
         ])
 
-        # 分批处理真实图片
         for i in tqdm(range(0, len(dataset["test"]), batch_size)):
             batch = dataset["test"][i:i+batch_size]["img"]
             real_batch = torch.stack([transform(img.convert("RGB")) for img in batch])
@@ -51,7 +50,7 @@ def eval_fid_dynamic(args):
             transforms.Normalize(mean=[0.5], std=[0.5]) 
             #transforms.Lambda(lambda t: (t * 2) - 1),
         ])
-        # 分批处理真实图片
+
         for i in tqdm(range(0, len(dataset["test"]), batch_size)):
             batch = dataset["test"][i:i+batch_size]["image"]
             real_batch = torch.stack([transform(img.convert("L")) for img in batch])
@@ -83,7 +82,7 @@ def eval_fid_dynamic(args):
             batch_time = time.time() - batch_start_time
             print(batch_time)
             total_time += batch_time
-            # samples[-1] 是最终生成的图片（形状 [batch, C, H, W]）
+            
             fake_batch = torch.from_numpy(samples[-1]).float().to(device)
             fake_batch = torch.clamp(fake_batch, -1, 1)
             if fake_batch.size(1) == 1:
@@ -137,7 +136,6 @@ def eval_is_dynamic(args):
             batch_time = time.time() - batch_start_time
             print(batch_time)
             total_time += batch_time
-            # samples[-1] 是最终生成的图片（形状 [batch, C, H, W]）
             fake_batch = torch.from_numpy(samples[-1]).float().to(device)
             
             fake_batch = torch.clamp(fake_batch, -1, 1)
@@ -157,9 +155,6 @@ def eval_is_dynamic(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    #parser.add_argument('--batch_size', type=int, default=64)
-    #parser.add_argument('--save_and_sample_every', type=int, required=False,default=1000)
-    #parser.add_argument('--results_folder', required=False, default="./results")
     parser.add_argument('--device', default="cuda:0")
     parser.add_argument('--dataset', default="fmnist")
     parser.add_argument('--model_path', default="model_ckpts/20250803_170605/best_model_epoch32_loss0.0161.pth")

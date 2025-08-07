@@ -6,43 +6,33 @@ import sys
 import logging
 from pathlib import Path
 import numpy as np
-#import torch
-#from torch.optim import Adam
-#from torchvision.utils import save_image
 
 from noise_predict_model.UNet import Unet
 from data_processing.get_data import get_fmnist_dataloader, get_cifar10_dataloader
 from utils.basic_functions import *
-#from utils.eval_functions import *
 from ddpm.denoising import *
 from ddpm.diffusion import *
 
 def train(args):
-    # 创建实验文件夹（带时间戳）
+    # 实验文件夹
     experiment_time = datetime.now().strftime("%Y%m%d_%H%M%S")
     ckpt_folder = Path("./model_ckpts") / experiment_time
     ckpt_folder.mkdir(parents=True, exist_ok=True)
-    #results_folder = ckpt_folder / "samples"
-    #results_folder.mkdir(exist_ok=True)
 
-    # 设置日志记录（同时输出到控制台和文件）
+    # 设置日志
     log_file = ckpt_folder / "training_log.txt"
 
-    # 清除之前的日志处理器（避免重复）
     logger = logging.getLogger()
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
 
-    # 设置日志格式
     log_format = "%(asctime)s - %(levelname)s - %(message)s"
     formatter = logging.Formatter(log_format)
 
-    # 文件日志（写入 training_log.txt）
-    file_handler = logging.FileHandler(log_file, mode='a')  # 'a' 表示追加模式
+    file_handler = logging.FileHandler(log_file, mode='a')
     file_handler.setFormatter(formatter)
     file_handler.setLevel(logging.INFO)
 
-    # 控制台日志
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
     console_handler.setLevel(logging.INFO)
@@ -55,11 +45,7 @@ def train(args):
     logger.info(f"Experiment started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     logger.info(f"Log file: {log_file}")
     logger.info(f"Checkpoints will be saved to: {ckpt_folder}")
-    #logger.info(f"Samples will be saved to: {results_folder}")
-    
-    
-    #current_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    
+
     betas, sqrt_recip_alphas, sqrt_alphas_cumprod, sqrt_one_minus_alphas_cumprod,posterior_variance = get_shedule(schedule_func=linear_beta_schedule, timesteps=args.timesteps)
     
     if args.dataset == "fmnist":
@@ -74,18 +60,8 @@ def train(args):
     #model.to(args.device)
     optimizer = jt.optim.Adam(model.parameters(), lr=1e-3)
 
-    #results_folder = Path("./results")
-    #results_folder.mkdir(exist_ok=True)
-    #ckpt_folder = Path("./model_ckpts")/ current_time
-    #ckpt_folder.mkdir(exist_ok=True)
-    
-    ## 仅用于可视化
+    # 仅用于可视化
     data_for_vis = {"time_per_epoch":[],"loss_per_epoch":[],"loss_per_step":[],"val_loss_per_epoch":[],}
-    #time_per_epoch = []
-    #loss_per_epoch = []
-    #loss_per_step = []
-    #val_loss_per_epoch = []
-    ##
     
     best_val_loss = float('inf')
     total_train_time = 0
@@ -110,9 +86,6 @@ def train(args):
 
             t = jt.randint(0, args.timesteps, (batch_size,)).int32()
             loss = p_losses(model, batch, t, sqrt_alphas_cumprod, sqrt_one_minus_alphas_cumprod, loss_type=args.loss_type)
-
-            #if step % 100 == 0:
-            #    print("Loss:", loss.item())
 
             optimizer.backward(loss)
             optimizer.step()
@@ -181,8 +154,6 @@ def train(args):
             f"Time: {str(timedelta(seconds=eval_time))} | "
             f"Total Eval Time: {str(timedelta(seconds=total_eval_time))}"
         )
-        #avg_val_loss = total_val_loss / num_val_batches
-        #print(f"Epoch {epoch} - Validation Loss: {avg_val_loss:.4f}")
         
         # 保存最佳模型
         if avg_val_loss < best_val_loss:
@@ -190,18 +161,14 @@ def train(args):
             model_path = ckpt_folder / f"best_model_epoch{epoch}_loss{avg_val_loss:.4f}.pkl"
             jt.save(model.state_dict(), model_path)
             logger.info(f"New best model saved to: {model_path}")
-            #print(f"Saved best model with val loss {avg_val_loss:.4f}")
 
-    #torch.save(model.state_dict(), str(ckpt_folder / "cifar_e6.pth"))
-    #model.save(str(ckpt_folder / "c_e20_t900.pkl"))
-    #print("Training complete! Model saved to 'model_ckpts/'.")
     np.savez("metrics.npz",
          val_loss_per_epoch=data_for_vis["val_loss_per_epoch"],
          time_per_epoch=data_for_vis["time_per_epoch"],
          loss_per_step=data_for_vis["loss_per_step"],
          loss_per_epoch=data_for_vis["loss_per_epoch"],)
     
-    # ===== 最终总结 =====
+    # 总结
     logger.info("\n" + "="*50)
     logger.info("Training Completed!")
     logger.info(f"Total Train Time: {str(timedelta(seconds=total_train_time))}")
@@ -209,36 +176,8 @@ def train(args):
     logger.info(f"Best Val Loss: {best_val_loss:.6f}")
     logger.info("="*50)
 
-def eval_fid(args):
-    from datasets import load_dataset
-    from torchvision import transforms
-    import os
-    from PIL import Image
-
-    dataset = load_dataset("fashion_mnist")
-    real_images = torch.stack([
-        transforms.ToTensor()(dataset["test"][i]["image"].convert("L")) * 2 - 1 
-        for i in range(2)  # 只取10张
-    ])
-
-    fake_images = []
-    for i in range(1, 3):
-        img_path = os.path.join("samples", f"generated_sample_{i}.png")
-        img = Image.open(img_path).convert("L")
-        img_tensor = transforms.ToTensor()(img) * 2 - 1
-        fake_images.append(img_tensor)
-        
-    fake_images = torch.stack(fake_images)  # [10, 1, H, W]
-
-    fid_score = calculate_fid(real_images.to(args.device), fake_images.to(args.device))
-    print(f"FID Score: {fid_score:.2f}")
-
-#python torch_train.py --device cuda:0 --epochs 6 --timesteps 300
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    #parser.add_argument('--batch_size', type=int, default=64)
-    #parser.add_argument('--save_and_sample_every', type=int, required=False,default=1000)
-    #parser.add_argument('--results_folder', required=False, default="./results")
     parser.add_argument('--device', default="cuda:0")
     parser.add_argument('--epochs', type=int, default=40)
     parser.add_argument('--timesteps', type=int, default=1000)
@@ -255,9 +194,5 @@ if __name__ == '__main__':
     #random.seed(_seed_)
     np.random.seed(_seed_)
 
-    if args.mode == "train":
-        train(args)
-    elif args.mode == "fid":
-        eval_fid(args)
-    else:
-        raise NotImplementedError()
+    train(args)
+

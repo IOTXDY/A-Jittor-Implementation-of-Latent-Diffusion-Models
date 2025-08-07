@@ -1,6 +1,4 @@
 from tqdm.auto import tqdm
-#import torch
-#import torch.nn.functional as F
 import jittor as jt
 import jittor.nn as F
 from utils.basic_functions import *
@@ -41,8 +39,6 @@ def p_sample(model, x, t, t_index, betas, sqrt_one_minus_alphas_cumprod,sqrt_rec
 
 @jt.no_grad()
 def p_sample_loop(model, shape,timesteps, betas, sqrt_one_minus_alphas_cumprod,sqrt_recip_alphas,posterior_variance):
-    #device = next(model.parameters()).device
-    
     b = shape[0]
     img = jt.randn(shape)
     imgs = []

@@ -1,8 +1,6 @@
 from datasets import load_dataset
 from torchvision import transforms
-#from torchvision.transforms import Compose, ToTensor, Lambda, ToPILImage, CenterCrop, Resize
 from torch.utils.data import DataLoader
-import os
 
 def fmnist_transforms(examples):
     transform = transforms.Compose([
@@ -32,9 +30,9 @@ def cifar10_transforms(examples):
     transform = transforms.Compose([
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])  # [0,1] -> [-1,1]
+        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
     ])
-    examples["pixel_values"] = [transform(image.convert("RGB")) for image in examples["img"]]  # CIFAR-10的键是"img"
+    examples["pixel_values"] = [transform(image.convert("RGB")) for image in examples["img"]]
     del examples["img"]
     return examples
 
@@ -53,6 +51,3 @@ def get_cifar10_dataloader():
     dataloader = DataLoader(transformed_dataset["train"], batch_size=batch_size, shuffle=True)
     testdataloader = DataLoader(transformed_dataset["test"], batch_size=batch_size, shuffle=True)
     return dataloader, testdataloader, image_size, channels, batch_size
-
-
-
