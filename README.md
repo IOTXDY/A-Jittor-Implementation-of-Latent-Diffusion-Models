@@ -103,10 +103,10 @@ python inference.py
 ````
 # pytorch
 cd Pytorch_DDPM
-python metrics.py
+python metrics.py --model_path "your_model.pth"
 # jittor
 cd Jittor_DDPM
-python metrics.py
+python metrics.py --model_path "your_model.pth"
 ````
 
 ## 7.实验结果
@@ -147,7 +147,7 @@ python metrics.py
 
 #### 7.5.1灰度图
 
-| 框架   | 采样1w张用时（秒） |
+| 框架   | 生成1万张用时（秒） |
 |--------|------|
 | pytorch   | 2015.97   |
 | jittor   | 3641.01   |
@@ -170,7 +170,7 @@ Pytorch采样过程：
 
 #### 7.5.2彩色图
 
-| 框架   | 采样1w张用时（秒） |
+| 框架   | 生成1万张用时（秒） |
 |--------|------|
 | pytorch   | 2189.36   |
 | jittor   | 4941.18   |
@@ -197,7 +197,7 @@ Pytorch采样过程：
 
 FID（Frechet Inception Distance）:衡量生成图片分布与真实图片分布的距离，数值越小，生成质量越高。
 
-| 框架   | 数据集 | 得分     |
+| 框架   | 数据集 | FID     |
 |--------|------|----------|
 | pytorch   | fmnist   | 16.14   |
 | pytorch   | cifar10   | 19.05   |
@@ -207,7 +207,7 @@ FID（Frechet Inception Distance）:衡量生成图片分布与真实图片分�
 
 IS（Inception Score）:衡量生成图片的质量和多样性，数值越高，生成效果越好。
 
-| 框架   | 训练数据集 | 得分     |
+| 框架   | 训练数据集 | IS     |
 |--------|------|----------|
 | pytorch   | fmnist   | 4.24 ± 0.12   |
 | pytorch   | cifar10   | 3.95 ± 0.08   |
