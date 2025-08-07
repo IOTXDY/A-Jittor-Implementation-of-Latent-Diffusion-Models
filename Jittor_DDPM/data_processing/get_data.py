@@ -5,6 +5,21 @@ from jittor.dataset import Dataset
 from PIL import Image
 import numpy as np
 
+class MyDataset(Dataset):
+    def __init__(self, hf_dataset):
+        super().__init__()
+        self.dataset = hf_dataset
+        self.total_len = len(hf_dataset)
+        self.set_attrs(batch_size=128, shuffle=True)
+    
+    def __getitem__(self, index):
+        item = self.dataset[index]
+        x = jt.array(item["pixel_values"])
+        return {"pixel_values": x}
+    
+    def __len__(self):
+        return self.total_len
+    
 def fmnist_transforms(examples):
     transformed_images = []
     for image in examples["image"]:
@@ -20,21 +35,6 @@ def fmnist_transforms(examples):
     del examples["image"]
     return examples
 
-class FashionMNISTDataset(Dataset):
-    def __init__(self, hf_dataset):
-        super().__init__()
-        self.dataset = hf_dataset
-        self.total_len = len(hf_dataset)
-        self.set_attrs(batch_size=128, shuffle=True)
-    
-    def __getitem__(self, index):
-        item = self.dataset[index]
-        x = jt.array(item["pixel_values"])
-        return {"pixel_values": x}
-    
-    def __len__(self):
-        return self.total_len
-
 def get_fmnist_dataloader():
     dataset = load_dataset("fashion_mnist")
 
@@ -45,10 +45,10 @@ def get_fmnist_dataloader():
 
     transformed_dataset = dataset.with_transform(fmnist_transforms).remove_columns("label")
     
-    dataloader = FashionMNISTDataset(transformed_dataset["train"])
+    dataloader = MyDataset(transformed_dataset["train"])
     
-    testdataloader = FashionMNISTDataset(transformed_dataset["test"])
-    #dataloader = DataLoader(transformed_dataset["train"], batch_size=batch_size, shuffle=True)
+    testdataloader = MyDataset(transformed_dataset["test"])
+    
     return dataloader,testdataloader, image_size, channels, batch_size
 
 def cifar10_transforms(examples):
@@ -80,9 +80,9 @@ def get_cifar10_dataloader():
     batch_size = 128
 
     transformed_dataset = dataset.with_transform(cifar10_transforms).remove_columns("label")
-    dataloader = FashionMNISTDataset(transformed_dataset["train"])
-    testdataloader = FashionMNISTDataset(transformed_dataset["test"])
-    #dataloader = DataLoader(transformed_dataset["train"], batch_size=batch_size, shuffle=True)
+    dataloader = MyDataset(transformed_dataset["train"])
+    testdataloader = MyDataset(transformed_dataset["test"])
+    
     return dataloader,testdataloader, image_size, channels, batch_size
 
 

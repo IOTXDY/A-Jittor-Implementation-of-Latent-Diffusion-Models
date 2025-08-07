@@ -37,8 +37,6 @@ def cifar10_transforms(examples):
     return examples
 
 def get_cifar10_dataloader():
-    #os.environ['http_proxy'] = 'http://127.0.0.1:7890'
-    #os.environ['https_proxy'] = 'http://127.0.0.1:7890'
     dataset = load_dataset("cifar10")
 
     # CIFAR-10的参数

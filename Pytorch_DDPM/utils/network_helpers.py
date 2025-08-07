@@ -44,18 +44,12 @@ class SinusoidalPositionEmbeddings(nn.Module):
         return embeddings
 
 class WeightStandardizedConv2d(nn.Conv2d):
-    """
-    https://arxiv.org/abs/1903.10520
-    weight standardization purportedly works synergistically with group normalization
-    """
     def forward(self, x):
         eps = 1e-5 if x.dtype == torch.float32 else 1e-3
 
         weight = self.weight
-        mean = reduce(weight, "o ... -> o 1 1 1", "mean")
-        #mean = weight.mean(dim=(1, 2, 3), keepdim=True)
-        var = reduce(weight, "o ... -> o 1 1 1", partial(torch.var, unbiased=False))
-        #var = weight.var(dim=(1, 2, 3), keepdim=True, unbiased=False)
+        mean = weight.mean(dim=(1, 2, 3), keepdim=True)
+        var = weight.var(dim=(1, 2, 3), keepdim=True, unbiased=False)
 
         normalized_weight = (weight - mean) * (var + eps).rsqrt()
         return F.conv2d(
@@ -87,7 +81,7 @@ class Block(nn.Module):
         return x
     
 class ResnetBlock(nn.Module):
-    def __init__(self, dim, dim_out, *, time_emb_dim=None, groups=8):
+    def __init__(self, dim, dim_out, time_emb_dim=None, groups=4):
         super().__init__()
         self.mlp = (
             nn.Sequential(nn.SiLU(), nn.Linear(time_emb_dim, dim_out*2)) if exists(time_emb_dim) else None

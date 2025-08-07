@@ -11,14 +11,6 @@ def default(val, d):
     else:
         return d
 
-def num_to_groups(num, divisior):
-    groups = num // divisior
-    remainder = num % divisior
-    arr = [divisior] * groups
-    if remainder>0:
-        arr.append(remainder)
-    return arr
-
 def extract(a, t, x_shape):
     batch_size = t.shape[0]
     out = a.gather(-1, t)
