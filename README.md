@@ -105,7 +105,7 @@ cd Pytorch_DDPM
 python metrics.py --model_path "your_model.pth"
 # jittor
 cd Jittor_DDPM
-python metrics.py --model_path "your_model.pth"
+python metrics.py --model_path "your_model.pkl"
 ````
 
 ## 7.实验结果
