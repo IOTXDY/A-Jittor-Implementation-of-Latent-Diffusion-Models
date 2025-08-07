@@ -16,5 +16,5 @@ def extract(a, t, x_shape):
     out = a.gather(-1, t)
 
     target_shape = [batch_size] + [1] * (len(x_shape) - 1)
-    out = out.reshape(target_shape).to(t.device)
+    out = out.reshape(target_shape)
     return out

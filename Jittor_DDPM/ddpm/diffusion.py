@@ -16,17 +16,6 @@ def linear_beta_schedule(timesteps):
     beta_end = 0.02
     return jt.linspace(beta_start, beta_end, timesteps)
 
-def quadratic_beta_schedule(timesteps):
-    beta_start = 0.0001
-    beta_end = 0.02
-    return jt.linspace(beta_start**0.5, beta_end**0.5, timesteps) ** 2
-
-def sigmoid_beta_schedule(timesteps):
-    beta_start = 0.0001
-    beta_end = 0.02
-    betas = jt.linspace(-6, 6, timesteps)
-    return jt.sigmoid(betas) * (beta_end - beta_start) + beta_start
-
 def get_shedule(schedule_func=linear_beta_schedule, timesteps=300):
     betas = schedule_func(timesteps=timesteps)
 

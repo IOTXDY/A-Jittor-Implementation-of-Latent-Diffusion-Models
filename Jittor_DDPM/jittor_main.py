@@ -182,7 +182,7 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', type=int, default=40)
     parser.add_argument('--timesteps', type=int, default=1000)
     parser.add_argument('--loss_type', default="huber")
-    parser.add_argument('--schedule_func', default="linear")
+    #parser.add_argument('--schedule_func', default="linear")
     parser.add_argument('--mode', default="train")
     parser.add_argument('--dataset', default="fmnist")
     

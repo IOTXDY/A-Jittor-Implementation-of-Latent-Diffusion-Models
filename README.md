@@ -13,7 +13,7 @@ CPU: 14 vCPU Intel(R) Xeon(R) Gold 6330 CPU @ 2.00GHz
 安装其他依赖：
 
 ````
-pip install numpy matplotlib datasets scipy einops tqdm torch torchvision
+pip install numpy matplotlib datasets scipy einops tqdm torch torchvision cupy
 # 如果需要评估（计算 fid 和 is）
 pip install torchmetrics torch-fidelity
 ````
@@ -60,7 +60,6 @@ Pytorch-DDPM/
 | epochs       | int    | 40       | 训练轮数            |
 | timesteps   | int   | 1000   | 采样时间步         |
 | loss_type   | str   | 'huber'   | 损失函数         |
-| schedule_func   | str   | 'linear'   | 规划函数         |
 | dataset   | str   | 'fmnist'   | 训练数据集         |
 
 ````
